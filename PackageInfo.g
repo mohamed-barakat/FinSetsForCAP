@@ -11,7 +11,7 @@ SetPackageInfo( rec(
 PackageName := "FinSetsForCAP",
 Subtitle := "The elementary topos of (skeletal) finite sets",
 Version := Maximum( [
-                   "2020.04-01", ## Mohamed's version
+                   "2021.02-01", ## Mohamed's version
                    ## this line prevents merge conflicts
                    "2017.05-26", ## Julia's version
                    ## this line prevents merge conflicts
