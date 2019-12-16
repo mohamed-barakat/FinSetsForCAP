@@ -212,3 +212,10 @@ DeclareOperation( "ImageObject",
 #! @Returns a list
 DeclareOperation( "ListOp",
         [ IsFiniteSet, IsFiniteSetMap ] );
+
+#! @Description
+#!  
+#! @Arguments pi
+#! @Returns a &CAP; object
+DeclareAttribute( "CartesianSectionsOfEpi",
+        IsFiniteSetMap );

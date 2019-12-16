@@ -994,6 +994,32 @@ end );
 Finalize( FinSets );
 
 ##
+InstallMethod( CartesianSectionsOfEpi,
+        "for a CAP map of finite sets",
+        [ IsFiniteSetMap ],
+
+  function( pi )
+    local S_pi, T_pi, S, T, l, sections;
+    
+    S_pi := Source( pi );
+    T_pi := Range( pi );
+    
+    S := AsList( S_pi );
+    T := List( T_pi, t -> AsList( Preimage( pi, FinSet( [ t ] ) ) ) );
+    
+    l := Length( T );
+    
+    sections := Cartesian( T );
+    
+    #sections := List( sections, a -> MapOfFinSetsNC( T_pi, List( [ 1 .. l ], i -> [ T[i], a[i] ] ), S_pi ) );
+    
+    sections := List( sections, a -> List( [ 1 .. l ], i -> [ T[i], a[i] ] ) );
+    
+    return FinSetNC( sections );
+    
+end );
+
+##
 InstallMethod( ViewObj,
         "for a CAP finite set",
         [ IsFiniteSet ],
