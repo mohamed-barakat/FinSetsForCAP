@@ -81,6 +81,17 @@ InstallMethod( AsList,
 end );
 
 ##
+InstallMethod( AsList,
+        "for a CAP map of skeletal finite sets",
+        [ IsSkeletalFiniteSetMap ],
+        
+  function ( phi )
+    
+    return ListOfValues( AsLazyArray( phi ) );
+    
+end );
+
+##
 InstallMethod( ListOp,
         "for a CAP skeletal finite set and a function",
         [ IsSkeletalFiniteSet, IsFunction ],
@@ -100,6 +111,17 @@ InstallMethod( MapOfFinSets,
         
   function ( s, G, t )
     
+    return MapOfFinSets( CapCategory( s ), s, LazyArrayFromList( G ), t );
+    
+end );
+
+##
+InstallMethod( MapOfFinSets,
+        "for two CAP skeletal finite sets and a lazy array",
+        [ IsSkeletalFiniteSet, IsLazyArray, IsSkeletalFiniteSet ],
+        
+  function ( s, G, t )
+    
     return MapOfFinSets( CapCategory( s ), s, G, t );
     
 end );
@@ -107,7 +129,7 @@ end );
 ##
 InstallOtherMethodForCompilerForCAP( MapOfFinSets,
         "for a category of skeletal finite sets, two CAP skeletal finite sets and a list",
-        [ IsCategoryOfSkeletalFinSets, IsSkeletalFiniteSet, IsList, IsSkeletalFiniteSet ],
+        [ IsCategoryOfSkeletalFinSets, IsSkeletalFiniteSet, IsLazyArray, IsSkeletalFiniteSet ],
         
   function ( cat, s, G, t )
     local map;
@@ -115,7 +137,7 @@ InstallOtherMethodForCompilerForCAP( MapOfFinSets,
     map := CreateCapCategoryMorphismWithAttributes( cat,
             s,
             t,
-            AsList, G );
+            AsLazyArray, G );
     
     #% CAP_JIT_DROP_NEXT_STATEMENT
     Assert( 4, IsWellDefined( map ) );
@@ -151,9 +173,9 @@ InstallMethod( Preimage,
     
     S := AsList( Source( phi ) );
     
-    phi := AsList( phi );
+    phi := AsLazyArray( phi );
     
-    return Filtered( S, i -> phi[1 + i] in t );
+    return Filtered( S, i -> phi[i] in t );
     
 end );
 
@@ -177,7 +199,7 @@ InstallMethod( CallFuncList,
     
     x := L[1];
     
-    return AsList( phi )[1 + x];
+    return AsLazyArray( phi )[x];
     
 end );
 
@@ -287,7 +309,7 @@ end );
 AddMorphismDatum( SkeletalFinSets,
   function ( SkeletalFinSets, map )
     
-    return AsList( map );
+    return AsLazyArray( map );
     
 end );
 
@@ -310,7 +332,7 @@ AddIsWellDefinedForMorphisms( SkeletalFinSets,
     
     s := Length( Source( mor ) );
     
-    rel := AsList( mor );
+    rel := AsLazyArray( mor );
     
     t := Length( Range( mor ) );
     
@@ -331,7 +353,7 @@ end );
 AddIsEqualForMorphisms( SkeletalFinSets,
   function ( cat, mor1, mor2 )
     
-    return AsList( mor1 ) = AsList( mor2 );
+    return AsLazyArray( mor1 ) = AsLazyArray( mor2 );
     
 end );
 
@@ -347,7 +369,7 @@ end );
 AddIdentityMorphism( SkeletalFinSets,
   function ( cat, n )
     
-    return MapOfFinSets( cat, n, [ 0 .. Length( n ) - 1 ], n );
+    return MapOfFinSets( cat, n, LazyStandardInterval( Length( n ) ), n );
     
 end );
 
@@ -359,10 +381,10 @@ AddPreCompose( SkeletalFinSets,
     s := Source( map_pre );
     t := Range( map_post );
     
-    im_pre := AsList( map_pre );
-    im_post := AsList( map_post );
+    im_pre := AsLazyArray( map_pre );
+    im_post := AsLazyArray( map_post );
     
-    cmp := List( s, i -> im_post[1 + im_pre[1 + i]] );
+    cmp := LazyArray( Length( s ), i -> im_post[im_pre[i]] );
     
     return MapOfFinSets( cat, s, cmp, t );
     
@@ -372,7 +394,7 @@ end );
 AddImageObject( SkeletalFinSets,
   function ( cat, phi )
     
-    return FinSet( SkeletalFinSets, Length( Set( AsList( phi ) ) ) );
+    return FinSet( SkeletalFinSets, Length( Set( AsLazyArray( phi ) ) ) );
     
 end );
 
@@ -382,7 +404,7 @@ AddIsEpimorphism( SkeletalFinSets,
   function ( cat, phi )
     local imgs, t;
     
-    imgs := AsList( phi );
+    imgs := AsLazyArray( phi );
     
     t := Length( Range( phi ) );
     
@@ -403,7 +425,7 @@ AddIsMonomorphism( SkeletalFinSets,
   function ( cat, phi )
     local imgs, t;
     
-    imgs := AsList( phi );
+    imgs := AsLazyArray( phi );
     
     t := Length( Range( phi ) );
     
@@ -426,8 +448,8 @@ AddIsLiftable( SkeletalFinSets,
   function ( cat, f, g )
     local ff, gg, fff;
     
-    ff := AsList( f );
-    gg := AsList( g );
+    ff := AsLazyArray( f );
+    gg := AsLazyArray( g );
     
     if 100 * Length( ff ) < Length( gg ) then
         fff := Set( ff );
@@ -447,10 +469,10 @@ AddLift( SkeletalFinSets,
     S := Source( f );
     T := Source( g );
     
-    gg := AsList( g );
-    ff := AsList( f );
+    gg := AsLazyArray( g );
+    ff := AsLazyArray( f );
     
-    return MapOfFinSets( cat, S, List( S, x -> -1 + SafePosition( gg, ff[1 + x] ) ), T );
+    return MapOfFinSets( cat, S, LazyArray( Length( S ), x -> SafePosition( gg, ff[x] ) ), T );
     
 end );
 
@@ -460,8 +482,8 @@ AddIsColiftable( SkeletalFinSets,
   function ( cat, f, g )
     local ff, gg;
     
-    ff := AsList( f );
-    gg := AsList( g );
+    ff := ListOfValues( AsLazyArray( f ) );
+    gg := ListOfValues( AsLazyArray( g ) );
     
     return ForAll( Set( ff ), i -> Length( Set( gg{Positions( ff, i )} ) ) = 1 );
     
@@ -475,8 +497,8 @@ AddColift( SkeletalFinSets,
     S := Range( f );
     T := Range( g );
     
-    ff := AsList( f );
-    gg := AsList( g );
+    ff := AsLazyArray( f );
+    gg := AsLazyArray( g );
     
     chi :=
       function ( y )
@@ -486,7 +508,7 @@ AddColift( SkeletalFinSets,
         return gg[SafePosition( ff, y )];
     end;
     
-    return MapOfFinSets( cat, S, List( S, y -> chi(y) ), T );
+    return MapOfFinSets( cat, S, LazyArray( Length( S ), y -> chi(y) ), T );
     
 end );
 
@@ -494,22 +516,22 @@ end );
 AddImageEmbeddingWithGivenImageObject( SkeletalFinSets,
   function ( cat, phi, image )
     
-    return MapOfFinSets( cat, image, Set( AsList( phi ) ), Range( phi ) );
+    return MapOfFinSets( cat, image, LazyArrayFromList( Set( AsLazyArray( phi ) ) ), Range( phi ) );
 
 end );
 
 ##
 AddCoastrictionToImageWithGivenImageObject( SkeletalFinSets,
   function ( cat, phi, image_object )
-    local G, images, s, L, l, pi;
+    local G, images, s, L, pi;
     
-    G := AsList( phi );
+    G := AsLazyArray( phi );
     
     images := Set( G );
     
     s := Source( phi );
     
-    L := List( s, i -> -1 + SafePosition( images, G[1 + i] ) );
+    L := LazyArray( Length( s ), l -> -1 + SafePosition( images, G[l] ) );
     
     pi := MapOfFinSets( cat, s, L, image_object );
     
@@ -543,7 +565,7 @@ end );
 AddUniversalMorphismIntoTerminalObjectWithGivenTerminalObject( SkeletalFinSets,
   function ( cat, m, t )
     
-    return MapOfFinSets( cat, m, ListWithIdenticalEntries( Length( m ), 0 ), t );
+    return MapOfFinSets( cat, m, LazyConstantArray( Length( m ), 0 ), t );
     
 end );
 
@@ -566,7 +588,7 @@ AddProjectionInFactorOfDirectProductWithGivenDirectProduct( SkeletalFinSets,
     
     a := Product( List( D{[ 1 .. k - 1 ]}, Length ) );
     
-    return MapOfFinSets( cat, P, List( P, i -> RemInt( QuoInt( i, a ), l ) ), T );
+    return MapOfFinSets( cat, P, LazyArray( Length( P ), i -> RemInt( QuoInt( i, a ), l ) ), T );
     
 end );
 
@@ -581,10 +603,10 @@ AddUniversalMorphismIntoDirectProductWithGivenDirectProduct( SkeletalFinSets,
     
     dd := List( [ 0 .. l - 1 ], j -> Product( d{[ 1 .. j ]} ) );
     
-    taus := List( tau, AsList );
+    taus := List( tau, AsLazyArray );
     
     # if l = 0, then Sum( [ 0 .. l - 1 ], j -> ... ) = 0 ∈ TerminalObject = P
-    return MapOfFinSets( cat, T, List( T, i -> Sum( [ 0 .. l - 1 ], j -> taus[1 + j][1 + i] * dd[1 + j] ) ), P );
+    return MapOfFinSets( cat, T, LazyArray( Length( T ), i -> Sum( [ 0 .. l - 1 ], j -> taus[1 + j][i] * dd[1 + j] ) ), P );
     
 end );
 
@@ -593,9 +615,9 @@ AddEqualizer( SkeletalFinSets,
   function ( cat, s, D )
     local D2, Eq;
     
-    D2 := List( D, AsList );
+    D2 := List( D, AsLazyArray );
     
-    Eq := Filtered( [ 0 .. Length( s ) - 1 ], x -> ForAll( [ 1 .. Length( D ) - 1 ], j -> D2[j][1 + x] = D2[j + 1][1 + x] ) );
+    Eq := Filtered( [ 0 .. Length( s ) - 1 ], x -> ForAll( [ 1 .. Length( D ) - 1 ], j -> D2[j][x] = D2[j + 1][x] ) );
     
     return FinSet( SkeletalFinSets, Length( Eq ) );
     
@@ -606,11 +628,11 @@ AddEmbeddingOfEqualizerWithGivenEqualizer( SkeletalFinSets,
   function ( cat, s, D, E )
     local D2, Eq;
     
-    D2 := List( D, AsList );
+    D2 := List( D, AsLazyArray );
     
-    Eq := Filtered( [ 0 .. Length( s ) - 1 ], x -> ForAll( [ 1 .. Length( D ) - 1 ], j -> D2[j][1 + x] = D2[j + 1][1 + x] ) );
+    Eq := Filtered( [ 0 .. Length( s ) - 1 ], x -> ForAll( [ 1 .. Length( D ) - 1 ], j -> D2[j][x] = D2[j + 1][x] ) );
     
-    return MapOfFinSets( cat, E, Eq, s );
+    return MapOfFinSets( cat, E, LazyArrayFromList( Eq ), s );
     
 end );
 
@@ -619,13 +641,13 @@ AddUniversalMorphismIntoEqualizerWithGivenEqualizer( SkeletalFinSets,
   function ( cat, s, D, test_object, tau, E )
     local D2, Eq, t;
     
-    D2 := List( D, AsList );
+    D2 := List( D, AsLazyArray );
     
-    Eq := Filtered( [ 0 .. Length( s ) - 1 ], x -> ForAll( [ 1 .. Length( D ) - 1 ], j -> D2[j][1 + x] = D2[j + 1][1 + x] ) );
+    Eq := Filtered( [ 0 .. Length( s ) - 1 ], x -> ForAll( [ 1 .. Length( D ) - 1 ], j -> D2[j][x] = D2[j + 1][x] ) );
     
-    t := AsList( tau );
+    t := AsLazyArray( tau );
     
-    return MapOfFinSets( cat, test_object, List( test_object, x -> -1 + SafePosition( Eq, t[1 + x] ) ), E );
+    return MapOfFinSets( cat, test_object, LazyArray( Length( test_object ), x -> -1 + SafePosition( Eq, t[x] ) ), E );
     
 end );
 
@@ -652,7 +674,7 @@ end );
 AddUniversalMorphismFromInitialObjectWithGivenInitialObject( SkeletalFinSets,
   function ( cat, m, I )
     
-    return MapOfFinSets( cat, I, [ ], m );
+    return MapOfFinSets( cat, I, LazyStandardInterval( 0 ), m );
     
 end );
 
@@ -696,7 +718,7 @@ end );
 AddMonomorphismIntoSomeInjectiveObjectWithGivenSomeInjectiveObject( SkeletalFinSets,
   function ( cat, M, injective_object )
     
-    return MapOfFinSets( cat, M, [ 0 .. Length( M ) - 1 ], injective_object );
+    return MapOfFinSets( cat, M, LazyStandardInterval( Length( M ) ), injective_object );
     
 end );
 
@@ -719,7 +741,7 @@ AddInjectionOfCofactorOfCoproductWithGivenCoproduct( SkeletalFinSets,
     
     s := L[i];
     
-    return MapOfFinSets( cat, s, [ sum .. sum + Length( s ) - 1 ], coproduct );
+    return MapOfFinSets( cat, s, LazyInterval( Length( s ), sum ), coproduct );
     
 end );
 
@@ -728,7 +750,7 @@ AddUniversalMorphismFromCoproductWithGivenCoproduct( SkeletalFinSets,
   function ( cat, L, test_object, tau, S )
     local concat;
     
-    concat := Concatenation( List( tau, AsList ) );
+    concat := Concatenation( List( tau, AsLazyArray ) );
     
     return MapOfFinSets( cat, S, concat, test_object );
     
@@ -749,7 +771,7 @@ AddProjectionOntoCoequalizerWithGivenCoequalizer( SkeletalFinSets,
     
     Cq := SKELETAL_FIN_SETS_ExplicitCoequalizer( s, D );
     
-    cmp := List( s, x -> -1 + SafePosition( Cq, SafeFirst( Cq, c -> x in c ) ) );
+    cmp := LazyArray( Length( s ), x -> -1 + SafePosition( Cq, SafeFirst( Cq, c -> x in c ) ) );
     
     return MapOfFinSets( cat, s, cmp, C );
     
@@ -762,7 +784,7 @@ AddUniversalMorphismFromCoequalizerWithGivenCoequalizer( SkeletalFinSets,
     
     Cq := SKELETAL_FIN_SETS_ExplicitCoequalizer( s, D );
 
-    return MapOfFinSets( cat, C, List( Cq, x -> tau( x[1] ) ), Range( tau ) );
+    return MapOfFinSets( cat, C, LazyArrayFromList( List( Cq, x -> tau( x[1] ) ) ), Range( tau ) );
     
 end );
 
@@ -810,7 +832,7 @@ AddCartesianBraidingInverseWithGivenDirectProducts( SkeletalFinSets,
     
     n := Length( N );
     
-    return MapOfFinSets( cat, MN, List( MN , i -> RemInt( i, n ) * m + QuoInt( i, n ) ), NM );
+    return MapOfFinSets( cat, MN, LazyArray( Length( MN ), i -> RemInt( i, n ) * m + QuoInt( i, n ) ), NM );
     
 end );
 
@@ -845,7 +867,7 @@ AddExponentialOnMorphismsWithGivenExponentials( SkeletalFinSets,
       MapOfFinSets(
               cat,
               S,
-              List( [ 0 .. n ^ m - 1 ],
+              LazyArray( n ^ m,
                 function ( i )
                   local composition, images;
                   
@@ -856,13 +878,13 @@ AddExponentialOnMorphismsWithGivenExponentials( SkeletalFinSets,
                               MapOfFinSets(
                                       cat,
                                       M,
-                                      List( [ 0 .. m - 1 ], j -> RemInt( QuoInt( i, n^j ), n ) ),
+                                      LazyArray( m, j -> RemInt( QuoInt( i, n^j ), n ) ),
                                       N ),
                               beta ] );
                   
-                  images := AsList( composition );
+                  images := AsLazyArray( composition );
                   
-                  return Sum( List( [ 0 .. a - 1 ], k -> images[1 + k] * b^k ) );
+                  return Sum( List( [ 0 .. a - 1 ], k -> images[k] * b^k ) );
                   
               end ),
               T );
@@ -879,7 +901,7 @@ AddCartesianEvaluationMorphismWithGivenSource( SkeletalFinSets,
     
     exp := n ^ m;
     
-    return MapOfFinSets( cat, HM_NxM, List( [ 0 .. ( n^m * m ) - 1 ], i -> RemInt( QuoInt( i, n^QuoInt( i, exp ) ), n ) ), N );
+    return MapOfFinSets( cat, HM_NxM, LazyArray( exp * m, i -> RemInt( QuoInt( i, n^QuoInt( i, exp ) ), n ) ), N );
     
 end );
 
@@ -893,9 +915,9 @@ AddCartesianCoevaluationMorphismWithGivenRange( SkeletalFinSets,
     
     mn := m * n;
     
-    #return MapOfFinSets( cat, M, List( [ 0 .. m - 1 ], i -> Sum( [ 0 .. n - 1 ], j -> ( i + m * j ) * (m*n)^j ) ), HN_MxN );
+    #return MapOfFinSets( cat, M, LazyArray( m, i -> Sum( [ 0 .. n - 1 ], j -> ( i + m * j ) * (m*n)^j ) ), HN_MxN );
     
-    return MapOfFinSets( cat, M, List( [ 0 .. m - 1 ], i -> i * GeometricSum( mn, n ) + m * mn * GeometricSumDiff1( mn, n ) ), HN_MxN );
+    return MapOfFinSets( cat, M, LazyArray( m, i -> i * GeometricSum( mn, n ) + m * mn * GeometricSumDiff1( mn, n ) ), HN_MxN );
     
 end );
 
@@ -914,9 +936,9 @@ AddClassifyingMorphismOfSubobjectWithGivenSubobjectClassifier( SkeletalFinSets,
     
     range := Range( monomorphism );
     
-    images := AsList( monomorphism );
+    images := AsLazyArray( monomorphism );
     
-    chi := List( range,
+    chi := LazyArray( Length( range ),
                  function ( x )
                    
                    if x in images then
@@ -944,7 +966,7 @@ AddMorphismsOfExternalHom( SkeletalFinSets,
                  i -> CartesianLambdaElimination( cat,
                          A,
                          B,
-                         MapOfFinSets( cat, T, [ i ], hom_A_B ) ) );
+                         MapOfFinSets( cat, T, LazyConstantArray( 1, i ), hom_A_B ) ) );
     
 end );
 # =#
@@ -1029,9 +1051,22 @@ InstallMethod( Display,
         [ IsSkeletalFiniteSetMap ],
         
   function ( phi )
+    local lazy;
+    
     Print( PrintString( Source( phi ) ) );
-    Print( " ⱶ", AsList( phi ), "→ " );
+    
+    lazy := AsLazyArray( phi );
+    
+    if IsLazyInterval( lazy ) or
+       IsLazyConstantArray( lazy ) or
+       ValueOption( "lazy" ) = true then
+        Print( " ⱶ", lazy, "→ " );
+    else
+        Print( " ⱶ", AsList( phi ), "→ " );
+    fi;
+    
     Print( PrintString( Range( phi ) ), "\n" );
+    
 end );
 
 ##

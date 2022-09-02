@@ -99,6 +99,7 @@ Dependencies := rec(
   GAP := ">= 4.11.1",
   NeededOtherPackages := [
                    [ "CAP", ">= 2022.11-10" ],
+                   [ "ToolsForHomalg", ">= 2022.09-02" ],
                    [ "Toposes", ">= 2022.10-05" ],
                    ],
   SuggestedOtherPackages := [ ],

@@ -277,16 +277,16 @@ CapJitAddLogicTemplate(
 
 CapJitAddLogicTemplate(
     rec(
-        variable_names := [ "list", "constant" ],
-        src_template := "List( list, i -> constant )",
-        dst_template := "ListWithIdenticalEntries( Length( list ), constant )",
+        variable_names := [ "length", "constant" ],
+        src_template := "LazyArray( length, i -> constant )",
+        dst_template := "LazyConstantArray( length, constant )",
     )
 );
 
 CapJitAddLogicTemplate(
     rec(
         variable_names := [ "length", "constant", "pos" ],
-        src_template := "ListWithIdenticalEntries( length, constant )[pos]",
+        src_template := "LazyConstantArray( length, constant )[pos]",
         dst_template := "constant",
     )
 );
