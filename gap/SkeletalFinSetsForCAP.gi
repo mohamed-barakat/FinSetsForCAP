@@ -359,10 +359,7 @@ AddPreCompose( SkeletalFinSets,
     s := Source( map_pre );
     t := Range( map_post );
     
-    im_pre := AsList( map_pre );
-    im_post := AsList( map_post );
-    
-    cmp := List( s, i -> im_post[1 + im_pre[1 + i]] );
+    cmp := List( s, i -> map_post( map_pre( i ) ) );
     
     return MapOfFinSets( cat, s, cmp, t );
     

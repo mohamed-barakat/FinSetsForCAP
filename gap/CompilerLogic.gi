@@ -79,6 +79,16 @@ CapJitAddLogicTemplate(
     )
 );
 
+##
+CapJitAddLogicTemplate(
+    rec(
+        variable_names := [ "morphism", "index" ],
+        variable_filters := [ IsSkeletalFiniteSetMap, IsInt ],
+        src_template := "morphism( index )",
+        dst_template := "AsList( morphism )[1 + index]",
+    )
+);
+
 ## for PushoutComplement
 CapJitAddLogicTemplate(
     rec(

@@ -18,13 +18,7 @@ compiled_category_name := "CategoryOfSkeletalFinSetsPrecompiled";;
 package_name := "FinSetsForCAP";;
 primitive_operations :=
   ListPrimitivelyInstalledOperationsOfCategory( category_constructor() );;
-list_of_operations :=
-  SortedList( Concatenation( primitive_operations, [
-          "CartesianLambdaIntroduction",
-          "CartesianLambdaElimination",
-          #"HasPushoutComplement",
-          "PushoutComplement",
-          ] ) );;
+list_of_operations := [ "PreCompose" ];;
 
 CapJitPrecompileCategoryAndCompareResult(
         category_constructor,
