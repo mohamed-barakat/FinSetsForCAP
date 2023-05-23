@@ -591,3 +591,37 @@ CapJitAddLogicTemplate(
         dst_template := "List( list, AsList )[index][1 + x]",
     )
 );
+
+CapJitAddLogicTemplate(
+    rec(
+        variable_names := [ "length", "value", "func" ],
+        src_template := "List( ListWithIdenticalEntries( length, value ), func )",
+        dst_template := "ListWithIdenticalEntries( length, func( value ) )",
+    )
+);
+
+CapJitAddLogicTemplate(
+    rec(
+        variable_names := [ "length", "value" ],
+        src_template := "Length( ListWithIdenticalEntries( length, value ) )",
+        dst_template := "length",
+    )
+);
+
+CapJitAddLogicTemplate(
+    rec(
+        variable_names := [ "length", "number" ],
+        variable_filters := [ IsBigInt, IsBigInt ],
+        src_template := "Product( ListWithIdenticalEntries( length, number ) )",
+        dst_template := "number ^ length",
+    )
+);
+
+CapJitAddLogicTemplate(
+    rec(
+        variable_names := [ "number" ],
+        variable_filters := [ IsBigInt ],
+        src_template := "number * number",
+        dst_template := "number ^ 2",
+    )
+);
