@@ -968,7 +968,7 @@ AddCartesianLambdaElimination( SkeletalFinSets,
     v := AsFunc( intro )( 0 );
     
     f := CapJitTypedExpression(
-                 i -> RemInt( QuoInt( v, n^i ), n ),
+                 i -> DigitInPositionalNotation( v, i, m, n ),
                  cat -> SkeletalFinSets_func_type );
     
     return MorphismConstructor( cat, M, f, N );

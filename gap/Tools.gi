@@ -17,11 +17,11 @@ InstallMethod( GeometricSum,
     
 end );
 
-## Sum( [ 1 .. n - 1 ], i -> i * q^(i-1) )
+## Sum( [ 0 .. n - 1 ], i -> i * q^(i-1) )
 InstallMethod( GeometricSumDiff1,
         [ IsBigInt, IsBigInt ],
   function ( q, n )
-
+    
     if n = 0 then
         return BigInt( 0 );
     elif q = 1 then
@@ -29,5 +29,17 @@ InstallMethod( GeometricSumDiff1,
     fi;
     
     return QUO_INT( 1 + ((n - 1) * q - n) * q ^ (n - 1), (q - 1) ^ 2 );
+    
+end );
+
+## CartesianLambdaElimination
+InstallMethod( DigitInPositionalNotation,
+        [ IsBigInt, IsBigInt, IsBigInt, IsBigInt ],
+        
+  function( number, index, length, base )
+    
+    ## Assert( 0, index < length );
+    
+    return RemInt( QuoInt( number, base^index ), base );
     
 end );

@@ -356,6 +356,15 @@ CapJitAddLogicTemplate(
 CapJitAddLogicTemplate(
     rec(
         variable_names := [ "number" ],
+        #variable_filters := [ IsBigInt ], ## TODO: activating this line does not trigger the template
+        src_template := "BigInt( 1 ) * number",
+        dst_template := "number",
+    )
+);
+
+CapJitAddLogicTemplate(
+    rec(
+        variable_names := [ "number" ],
         variable_filters := [ IsBigInt ],
         src_template := "BigInt( 1 ) * number",
         dst_template := "number",
@@ -610,18 +619,18 @@ CapJitAddLogicTemplate(
 
 CapJitAddLogicTemplate(
     rec(
-        variable_names := [ "length", "number" ],
-        variable_filters := [ IsBigInt, IsBigInt ],
-        src_template := "Product( ListWithIdenticalEntries( length, number ) )",
-        dst_template := "number ^ length",
+        variable_names := [ "number" ],
+        variable_filters := [ IsBigInt ],
+        src_template := "Product( ListWithIdenticalEntries( 2, number ) )",
+        dst_template := "number * number",
     )
 );
 
 CapJitAddLogicTemplate(
     rec(
-        variable_names := [ "number" ],
-        variable_filters := [ IsBigInt ],
-        src_template := "number * number",
-        dst_template := "number ^ 2",
+        variable_names := [ "i", "m", "n", "mn", "j" ],
+        #variable_filters := [ IsBigInt, IsBigInt, IsBigInt, IsBigInt, IsBigInt ], ## TODO: activating this line does not trigger the template
+        src_template := "DigitInPositionalNotation( i * GeometricSum( mn, n ) + m * mn * GeometricSumDiff1( mn, n ), j, n, mn )",
+        dst_template := "i + m * j",
     )
 );

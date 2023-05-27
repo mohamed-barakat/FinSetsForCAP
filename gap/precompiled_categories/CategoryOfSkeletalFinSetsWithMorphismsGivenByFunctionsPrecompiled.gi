@@ -61,11 +61,12 @@ end
         
 ########
 function ( cat_1, a_1, b_1, alpha_1 )
-    local deduped_1_1, hoisted_2_1;
-    hoisted_2_1 := AsFunc( alpha_1 )( 0 );
-    deduped_1_1 := Length( b_1 );
+    local hoisted_1_1, hoisted_2_1, hoisted_3_1;
+    hoisted_3_1 := Length( b_1 );
+    hoisted_2_1 := Length( a_1 );
+    hoisted_1_1 := AsFunc( alpha_1 )( 0 );
     return CreateCapCategoryMorphismWithAttributes( cat_1, a_1, b_1, AsFunc, function ( i_2 )
-            return REM_INT( QUO_INT( hoisted_2_1, deduped_1_1 ^ i_2 ), deduped_1_1 );
+            return DigitInPositionalNotation( hoisted_1_1, i_2, hoisted_2_1, hoisted_3_1 );
         end );
 end
 ########
@@ -301,15 +302,16 @@ end
         
 ########
 function ( cat_1, s_1, alpha_1, beta_1, r_1 )
-    local hoisted_1_1, deduped_2_1, hoisted_3_1, hoisted_4_1, hoisted_5_1;
-    hoisted_5_1 := [ 0 .. Length( Source( alpha_1 ) ) - 1 ];
-    hoisted_4_1 := Length( Range( beta_1 ) );
-    hoisted_3_1 := AsFunc( beta_1 );
-    deduped_2_1 := Length( Source( beta_1 ) );
+    local hoisted_1_1, hoisted_2_1, hoisted_3_1, hoisted_4_1, hoisted_5_1, hoisted_6_1;
+    hoisted_6_1 := [ 0 .. Length( Source( alpha_1 ) ) - 1 ];
+    hoisted_5_1 := Length( Range( beta_1 ) );
+    hoisted_4_1 := AsFunc( beta_1 );
+    hoisted_3_1 := Length( Source( beta_1 ) );
+    hoisted_2_1 := Length( Range( alpha_1 ) );
     hoisted_1_1 := AsFunc( alpha_1 );
     return CreateCapCategoryMorphismWithAttributes( cat_1, s_1, r_1, AsFunc, function ( i_2 )
-            return Sum( List( hoisted_5_1, function ( k_3 )
-                      return hoisted_3_1( REM_INT( QUO_INT( i_2, deduped_2_1 ^ hoisted_1_1( k_3 ) ), deduped_2_1 ) ) * hoisted_4_1 ^ k_3;
+            return Sum( List( hoisted_6_1, function ( k_3 )
+                      return hoisted_4_1( DigitInPositionalNotation( i_2, hoisted_1_1( k_3 ), hoisted_2_1, hoisted_3_1 ) ) * hoisted_5_1 ^ k_3;
                   end ) );
         end );
 end
@@ -650,11 +652,12 @@ end
         
 ########
 function ( cat_1, arg2_1, arg3_1 )
-    local deduped_2_1;
-    deduped_2_1 := Length( arg3_1 );
-    return List( [ 0 .. deduped_2_1 ^ Length( arg2_1 ) - 1 ], function ( logic_new_func_x_2 )
+    local deduped_3_1, deduped_4_1;
+    deduped_4_1 := Length( arg2_1 );
+    deduped_3_1 := Length( arg3_1 );
+    return List( [ 0 .. deduped_3_1 ^ deduped_4_1 - 1 ], function ( logic_new_func_x_2 )
             return CreateCapCategoryMorphismWithAttributes( cat_1, arg2_1, arg3_1, AsFunc, function ( i_3 )
-                    return REM_INT( QUO_INT( logic_new_func_x_2, deduped_2_1 ^ i_3 ), deduped_2_1 );
+                    return DigitInPositionalNotation( logic_new_func_x_2, i_3, deduped_4_1, deduped_3_1 );
                 end );
         end );
 end
@@ -772,10 +775,10 @@ function ( cat_1, l_1, m_1 )
     deduped_6_1 := deduped_31_1 * deduped_35_1;
     deduped_5_1 := AsFunc( m_1 );
     deduped_25_1 := SSortedList( List( [ 0 .. Length( deduped_28_1 ) - 1 ], function ( i_2 )
-              return deduped_36_1 * deduped_5_1( REM_INT( QUO_INT( deduped_28_1[(1 + i_2)], deduped_36_1 ), deduped_32_1 ) ) + deduped_6_1;
+              return deduped_5_1( REM_INT( QUO_INT( deduped_28_1[1 + i_2], deduped_36_1 ), deduped_32_1 ) ) + deduped_6_1;
           end ) );
     deduped_23_1 := SSortedList( List( [ 0 .. Length( deduped_26_1 ) - 1 ], function ( i_2 )
-              return deduped_36_1 * deduped_5_1( REM_INT( QUO_INT( deduped_29_1[(1 + REM_INT( QUO_INT( deduped_26_1[(1 + i_2)], deduped_36_1 ), deduped_27_1 ))], deduped_36_1 ), deduped_32_1 ) ) + deduped_6_1;
+              return deduped_5_1( REM_INT( QUO_INT( deduped_29_1[1 + REM_INT( QUO_INT( deduped_26_1[(1 + i_2)], deduped_36_1 ), deduped_27_1 )], deduped_36_1 ), deduped_32_1 ) ) + deduped_6_1;
           end ) );
     hoisted_19_1 := [ deduped_35_1 ];
     hoisted_18_1 := deduped_30_1{[ 1 .. Length( deduped_30_1 ) ]};
@@ -789,14 +792,14 @@ function ( cat_1, l_1, m_1 )
             local deduped_1_2;
             deduped_1_2 := REM_INT( QUO_INT( i_2, deduped_36_1 ), deduped_31_1 );
             return IdFunc( function (  )
-                        if (deduped_36_1 * IdFunc( function (  )
-                                          if (deduped_1_2 in hoisted_8_1) then
-                                              return deduped_36_1;
-                                          else
-                                              return deduped_35_1;
-                                          fi;
-                                          return;
-                                      end )(  ) + deduped_37_1 * IdFunc( function (  )
+                        if (IdFunc( function (  )
+                                        if (deduped_1_2 in hoisted_8_1) then
+                                            return deduped_36_1;
+                                        else
+                                            return deduped_35_1;
+                                        fi;
+                                        return;
+                                    end )(  ) + deduped_37_1 * IdFunc( function (  )
                                           if (deduped_1_2 in hoisted_15_1) then
                                               return deduped_36_1;
                                           else
